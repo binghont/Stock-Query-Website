@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+	<meta charset = "UTF-8">
+	<meta name = "viewport" content = "width=device-width, initial-scale=1">
+	<title>Stock Market Search</title>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<!--<link rel = "stylesheet" href = "bootstrap/css/bootstrap.min.css">-->
+	<link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" crossorigin = "anonymous">
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script type = "text/javascript" src = "http://code.jquery.com/jquery-2.2.1.min.js"></script>
+	<script src = "https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity = "sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin = "anonymous"></script>
+	<link href = "http://jquery-ui-bootstrap.github.io/jquery-ui-bootstrap/css/custom-theme/jquery-ui-1.10.3.custom.css" rel = "stylesheet">
+	<!--<link href = "jquery/jquery-ui.min.css" rel = "stylesheet">-->
+	<!-- time format js -->
+	<script type = "text/javascript" src = "http://momentjs.com/downloads/moment.min.js"></script>
+	<!-- History Charts js -->
+	<script type = "text/javascript" src = "http://code.highcharts.com/stock/highstock.js"></script>
+	<script type = "text/javascript" src = "script.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity = "sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin = "anonymous"></script>
+	<!-- bootstrap toggle -->
+	<link href = "https://gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css" rel = "stylesheet">
+	<script type = "text/javascript" src = "https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
+
+	<style type = "text/css">
+
+		#description:after {
+			content: "*";
+			color: red;
+		}
+		
+		#favorite{
+			padding: 4px 9px;
+		}
+		.panel-title{
+			font-size: 14px;
+		}
+		.glyphicon-star,.glyphicon-star-empty{
+			font-size: 20px;
+		}
+
+		.tab-content > .tab-pane,
+		.pill-content > .pill-pane {
+			display: block; /* undo display:none          */
+			height: 0; /* height:0 is also invisible */
+			overflow-y: hidden; /* no-overflow                */
+		}
+
+		.tab-content > .active,
+		.pill-content > .active {
+			height: auto; /* let the content decide it  */
+		}
+
+		body{
+			background-image: url("background.jpg");
+		}
+
+	</style>
+	<script></script>
+</head>
+<body>
+<div class = "container col-md-10 col-md-offset-1">
+	<br>
+	<div class = "row">
+		<div class = "col-md-12">
+			<div class = "panel panel-default" style = "margin-bottom: 0px">
+				<div class = "panel-body">
+					<form class = "form-horizontal" id = "search">
+						<h4 class = "text-center">Stock Market Search</h4>
+						<div class = "form-group">
+							<span class = "col-md-3 text-center " id = "description">
+								<strong>Enter the stock name or symbol:</strong>
+							</span>
+							<div class = "col-md-6" style = "margin-bottom: 10px">
+								<input type = "text" id = "stock" class = "form-control " placeholder = "Apple Inc or AAPL" required>
+							</div>
+							<div class = "col-md-3">
+								<button type = "submit" class = "btn btn-sm btn-primary">
+									<span class = "glyphicon glyphicon-search"></span>
+									Get Quote
+								</button>
+								<button id = "clear" type = "button" class = "btn btn-sm btn-default">
+									<span class = "glyphicon glyphicon-refresh"></span>
+									Clear
+								</button>
+							</div>
+						</div>
+						<div class = "form-group">
+							<div class = "col-md-6 col-md-offset-3 text-danger" id = "Invalid"></div>
+							<div class = "col-md-3">
+								<strong>Powered By</strong>
+								<a href = "http://dev.markitondemand.com/MODApis/" target = "_blank">
+									<img src = "http://cs-server.usc.edu:45678/hw/hw8/images/mod-logo.png" style = "width: 105px;height: 20px "/>
+								</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hr/>
+	<div class = "row">
+		<div class = "col-md-12">
+			<div class = "panel panel-default">
+				<div class = "panel-body">
+					<div id = "myCarousel" class = "carousel slide" data-interval = "false">
+						<!-- Wrapper for slides -->
+						<div class = "carousel-inner" role = "listbox">
+							<div class = "item active">
+								<div id = "FavoriteList" class = "panel panel-default">
+									<div class = "panel-heading">
+										<span class = "panel-title"><strong>Favorite List</strong></span>
+										<!--<label class="pull-left">Favorite List</label>-->
+										<div class = "pull-right">
+											<span class = "hidden-xs">
+												Automatic Refresh:
+											</span>
+											<a data-toggle = "tooltip" data-placement = "bottom" title = "Auto Refresh">
+												<input id = "autoRefresh" type = "checkbox" data-size="small">
+											</a>
+											<button id = "refresh" class = "btn btn-default btn-sm" data-toggle = "tooltip" data-placement = "bottom" title = "Refresh">
+												<span class = "glyphicon glyphicon-refresh"></span>
+											</button>
+											<button id = "next" class = "btn btn-default btn-sm" data-toggle = "tooltip" data-placement = "bottom" title = "Display Stock Information">
+												<span class = "glyphicon glyphicon-chevron-right"></span>
+											</button>
+										</div>
+									</div>
+									<div class = "panel-body">
+										<div class = 'table-responsive'>
+											<table id = "FavoriteTable" class = 'table table-striped'>
+												<tr>
+													<th>Symbol</th>
+													<th>Company Name</th>
+													<th>Stock Price</th>
+													<th>Change (Change Percent)</th>
+													<th>Market Cap</th>
+													<th></th>
+												</tr>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class = "item">
+								<div id = "StockDetails" class = "panel panel-default">
+									<div class = "panel-heading" align="center" >
+										<button id = "prev" class = "btn btn-default btn-sm pull-left" data-toggle = "tooltip" data-placement = "bottom" title = "Display Favorite List">
+											<span class = "glyphicon glyphicon-chevron-left"></span>
+										</button>
+										<span class = "panel-title"><strong>Stock Details</strong></span>
+									</div>
+									<div class = "panel-body">
+										<ul id = "myTab" class = "nav nav-pills ">
+											<li class = "active">
+												<a href = "#CurrentStock" data-toggle = "tab">
+													<span class = "glyphicon glyphicon-dashboard"></span>
+													<span  class = "hidden-xs">Current</span> Stock
+												</a>
+											</li>
+											<li>
+												<a href = "#HistoricalCharts" data-toggle = "tab"><span class = "glyphicon glyphicon-stats"></span>
+													<span  class ="hidden-xs">Historical</span> Charts
+												</a>
+											</li>
+											<li>
+												<a href = "#NewsFeed" data-toggle = "tab" id = "NF"><span class = "glyphicon glyphicon-link"></span>
+													 News <span  class = "hidden-xs">Feeds</span>
+												</a>
+											</li>
+										</ul>
+										<div class = "tab-content">
+											<hr>
+											<div class = "tab-pane fade in active" id = "CurrentStock">
+												<div id = "Buttons" class = "col-md-12"></div>
+												<div id = "DataTable" class = "col-md-6"></div>
+												<div id = "Chart" class = "col-md-6" align="center"></div>
+											</div>
+											<div class = "tab-pane fade" id = "HistoricalCharts">
+												<div id = "Charts" class = "col-md-12"></div>
+											</div>
+											<div class = "tab-pane fade" id = "NewsFeed"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
